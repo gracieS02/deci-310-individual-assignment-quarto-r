@@ -5,7 +5,8 @@ all: results/horse_pop_plot_largest_sd.png \
 	results/horse_pops_plot.png \
 	results/horses_spread.csv \
 	reports/qmd_example.html \
-	reports/qmd_example.pdf
+	reports/qmd_example.pdf \
+	docs/index.html
 
 
 
@@ -14,6 +15,17 @@ results/horse_pop_plot_largest_sd.png results/horse_pops_plot.png results/horses
 	Rscript source/generate_figures.R --input_dir="data/00030067-eng.csv" \
 		--out_dir="results"
 
+# render quarto report in HTML for GitHub Pages
+#docs/index.html: results reports/qmd_example.qmd
+#	mkdir -p docs
+#	quarto render reports/qmd_example.qmd --to html --output-dir ../docs --output index.html
+
+
+docs/index.html: reports/qmd_example.html
+	mkdir -p docs
+	cp reports/qmd_example.html docs/index.html
+	if [ -d reports/qmd_example_files ]; then cp -R reports/qmd_example_files docs/; fi
+	
 # render quarto report in HTML and PDF
 reports/qmd_example.html: results reports/qmd_example.qmd
 	quarto render reports/qmd_example.qmd --to html
@@ -24,6 +36,7 @@ reports/qmd_example.pdf: results reports/qmd_example.qmd
 # clean
 clean:
 	rm -rf results
+	rm -rf docs
 	rm -rf reports/qmd_example.html \
-		reports/qmd_example.pdf \
+	    reports/qmd_example.pdf \
 		reports/qmd_example_files
